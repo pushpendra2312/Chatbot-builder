@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import '../index.css'
 const SettingsPanel = ({ selectedNode, setSelectedNode, nodes, setNodes, closeSettingPanel, reactFlowInstance }) => {
 

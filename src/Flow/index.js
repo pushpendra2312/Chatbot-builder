@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import ReactFlow, {
     ReactFlowProvider,
     addEdge,
@@ -6,8 +6,6 @@ import ReactFlow, {
     useEdgesState,
     Controls,
     Handle,
-    getOutgoers,
-    getIncomers,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import Navbar from '../Components/Navbar';
@@ -25,8 +23,7 @@ const isEmptyObject = (obj) => {
 
 const TextNode = (props) => {
 
-    console.log("textNode", props)
-    const { id = null, data: { label = '', customOnNodeClick } } = props;
+    const { data: { label = '', customOnNodeClick } } = props;
 
     return (
         <div className='border text_node' onClick={() => customOnNodeClick(props)}>
@@ -46,45 +43,21 @@ const TextNode = (props) => {
 }
 
 const isValidConnection = (connection) => {
-    const { source = null, target = null } = connection || {};
-    console.log("hi123123", connection, sourceMap);
-    if (sourceMap[source]) {
-        console.log("hi123123 sourcemap count", source, sourceMap[source])
-        return false;
-    } else {
-        console.log("hi123123 sourc", source, sourceMap[source])
-        return true;
-    }
-
+    const { source = null } = connection || {};
+    return sourceMap[source] ? false : true;
 };
-const flowKey = 'saved-flow';
 
 const sourceMap = {};
 const targetMap = {};
-// const accessSourceMap = (callBackFn, ...args) => {
-//     return callBackFn(sourceMap, ...args)
-// }
-
-const copyToClipboard = (id = null, cb) => {
-    if (navigator.clipboard) {
-        let copyText = document.getElementById(id).innerHTML;
-        navigator.clipboard.writeText(copyText).then(() => {
-            if (cb) cb();
-        });
-    }
-}
 
 const nodeTypes = {
     text_node: TextNode
 };
 
-const nodesIdsMap = {};
-// const
-
 let id = 0;
 const getId = () => `dndnode_${id++}`;
 
-const DnDFlow = () => {
+const Flow = () => {
     const reactFlowWrapper = useRef(null);
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -95,7 +68,7 @@ const DnDFlow = () => {
         addSourceNodeIdToMap(params)
         addTargetNodeIdToMap(params)
         setEdges((eds) => addEdge(params, eds))
-    }, []);
+    }, [setEdges]);
 
     const onDragOver = useCallback((event) => {
         event.preventDefault();
@@ -103,43 +76,27 @@ const DnDFlow = () => {
     }, []);
 
     const addTargetNodeIdToMap = (args) => {
-        console.log('hi123123 123123123XXXXXXXXXXXXXXXXXXXXXX', args)
         const { target = null } = args || {};
-        if (targetMap[target]) {
-            console.log("hi123123 targetmap count", target, targetMap[target])
-            ++targetMap[target]
-        } else {
-            console.log("hi123123 target", target, targetMap[target])
-            targetMap[target] = ++targetMap[target]
-        }
+        if (targetMap[target]) ++targetMap[target];
+        else targetMap[target] = ++targetMap[target];
     }
 
     const addSourceNodeIdToMap = (args) => {
-        console.log('hi123123 123123123XXXXXXXXXXXXXXXXXXXXXX', args)
         const { source = null } = args || {};
-        if (sourceMap[source]) {
-            console.log("hi123123 sourcemap count", source, sourceMap[source])
-            ++sourceMap[source]
-        } else {
-            console.log("hi123123 sourc", source, sourceMap[source])
-            sourceMap[source] = ++sourceMap[source]
-        }
-    }
+        if (sourceMap[source]) ++sourceMap[source];
+        else sourceMap[source] = ++sourceMap[source];
 
-    console.log("nodes", nodes, edges)
+    }
 
     const addNodeIdToSourceMap = (...args) => {
         const [nodeId] = args;
-        // if (sourceMap[nodeId]) sourceMap[nodeId] = ++sourceMap[nodeId]
         sourceMap[nodeId] = 0;
     }
 
     const addNodeIdToTargetMap = (...args) => {
         const [nodeId] = args;
-        // if (sourceMap[nodeId]) sourceMap[nodeId] = ++sourceMap[nodeId]
         targetMap[nodeId] = 0;
     }
-    console.log('sourcemap', sourceMap, targetMap)
 
     const onDrop = useCallback(
         (event) => {
@@ -167,7 +124,7 @@ const DnDFlow = () => {
             addNodeIdToSourceMap(newNode.id)
             setNodes((nds) => nds.concat(newNode));
         },
-        [reactFlowInstance]
+        [reactFlowInstance, setNodes]
     );
 
     const customOnNodeClick = (data) => {
@@ -175,20 +132,9 @@ const DnDFlow = () => {
         setSelectedNode(data);
     }
 
-    // const onNodeClick = (data) => {
-    //     console.log("onNodeClick", data)
-    //     const selectedNodeId = data.target.dataset.id;
-    //     const selectedNode = reactFlowInstance.getNode(selectedNodeId)
-    //     setSelectedNode(selectedNode);
-    // }
-
     const closeSettingPanel = (nodeData) => {
         console.log("in closeSettingPanel", nodeData)
         setSelectedNode(null)
-    }
-
-    const onConnectEnd = (params) => {
-        console.log("hi123123 endXXXXXXXXXXXXXX", params)
     }
 
     const onEdgesDelete = (deletedEdges) => {
@@ -211,15 +157,14 @@ const DnDFlow = () => {
     const handleSaveBtn = () => {
         if (isEmptyObject(targetMap)) return;
         let noTargetHandleNodesCount = -1;
-        console.log('sourceMap targetMap', sourceMap, targetMap)
 
-        nodes.map((node) => {
+        nodes.forEach((node) => {
             const { id } = node;
             if (targetMap[id] === 0) ++noTargetHandleNodesCount;
         })
 
         if (noTargetHandleNodesCount > 0) alert('Cannot Save Flow')
-        else alert('Need to implement Saved functionality')
+        else alert('Need to Implement Saved Functionality')
 
     }
 
@@ -234,12 +179,10 @@ const DnDFlow = () => {
                             edges={edges}
                             onNodesChange={onNodesChange}
                             onEdgesChange={onEdgesChange}
-                            // onNodeClick={onNodeClick}
                             nodeTypes={nodeTypes}
                             onEdgesDelete={onEdgesDelete}
                             onConnect={onConnect}
                             onNodesDelete={onNodesDelete}
-                            onConnectEnd={onConnectEnd}
                             onInit={setReactFlowInstance}
                             onDrop={onDrop}
                             onDragOver={onDragOver}
@@ -257,7 +200,6 @@ const DnDFlow = () => {
                                 setNodes={setNodes}
                                 closeSettingPanel={closeSettingPanel}
                                 reactFlowInstance={reactFlowInstance}
-                            // handleInputChange={handleInputChange}
                             />
                         ) : <NodesPanel />
                     }
@@ -267,4 +209,4 @@ const DnDFlow = () => {
     );
 };
 
-export default DnDFlow;
+export default Flow;
