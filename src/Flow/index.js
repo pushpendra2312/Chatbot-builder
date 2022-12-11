@@ -107,6 +107,7 @@ const DnDFlow = () => {
         const { target = null } = args || {};
         if (targetMap[target]) {
             console.log("hi123123 targetmap count", target, targetMap[target])
+            ++targetMap[target]
         } else {
             console.log("hi123123 target", target, targetMap[target])
             targetMap[target] = ++targetMap[target]
@@ -118,6 +119,7 @@ const DnDFlow = () => {
         const { source = null } = args || {};
         if (sourceMap[source]) {
             console.log("hi123123 sourcemap count", source, sourceMap[source])
+            ++sourceMap[source]
         } else {
             console.log("hi123123 sourc", source, sourceMap[source])
             sourceMap[source] = ++sourceMap[source]
@@ -203,6 +205,7 @@ const DnDFlow = () => {
             delete sourceMap[id]
             delete targetMap[id]
         })
+        setSelectedNode(null)
     }
 
     const handleSaveBtn = () => {
