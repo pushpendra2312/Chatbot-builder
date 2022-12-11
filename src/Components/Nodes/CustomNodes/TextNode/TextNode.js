@@ -3,6 +3,7 @@ import { Handle } from "reactflow";
 import { sourceMap } from "../../../../Flow";
 import "./styles.css";
 
+//  this function returns true or false based on whether the connecting node is already present in the sourcemap or not 
 const isValidConnection = (...args) => {
     const [connection, sourceMap] = args;
     const { source = null } = connection || {};

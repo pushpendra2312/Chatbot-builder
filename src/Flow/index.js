@@ -16,10 +16,13 @@ import { NODE_TYPES } from '../Components/Nodes/nodesTypesMap';
 import SettingsPanel from '../Components/Panels/SettingsPanel';
 import NodesPanel from '../Components/Panels/NodesPanel';
 
+// made maps to store the no. of target edges and source edges a node have
 export const sourceMap = {};
 export const targetMap = {};
 
 const initialNodes = [];
+
+// this generate unique ids for the nodes
 let id = 0;
 const getId = () => `node_${id++}`;
 
@@ -43,14 +46,12 @@ const Flow = () => {
 
     const addTargetNodeIdToMap = (args) => {
         const { target = null } = args || {};
-        if (targetMap[target]) ++targetMap[target];
-        else targetMap[target] = ++targetMap[target];
+        targetMap[target] = ++targetMap[target];
     }
 
     const addSourceNodeIdToMap = (args) => {
         const { source = null } = args || {};
-        if (sourceMap[source]) ++sourceMap[source];
-        else sourceMap[source] = ++sourceMap[source];
+        sourceMap[source] = ++sourceMap[source];
 
     }
 
@@ -64,6 +65,7 @@ const Flow = () => {
         targetMap[nodeId] = 0;
     }
 
+    // on node click this shows up the settings panel and hides nodes panel
     const customOnNodeClick = useCallback((data) => {
         setSelectedNode(data);
     }, [setSelectedNode]);
@@ -119,6 +121,7 @@ const Flow = () => {
         setSelectedNode(null)
     }
 
+    // on save this function will check if there are more than one nodes that don't have target handles 
     const handleSaveBtn = () => {
         if (isEmptyObject(targetMap)) return;
         let noTargetHandleNodesCount = -1;
