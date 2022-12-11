@@ -5,57 +5,23 @@ import ReactFlow, {
     useNodesState,
     useEdgesState,
     Controls,
-    Handle,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import Navbar from '../Components/Navbar';
-import SettingsPanel from '../Components/SettingsPanel';
-import NodesPanel from '../Components/NodesPanel';
+import "./styles.css";
+import "../index.css";
+import Navbar from '../Components/Navbar/Navbar';
 
+import { isEmptyObject } from '../Utils/isEmptyObject';
+import { NODE_TYPES } from '../Components/Nodes/nodesTypesMap';
+import SettingsPanel from '../Components/Panels/SettingsPanel';
+import NodesPanel from '../Components/Panels/NodesPanel';
 
-import '../index.css';
+export const sourceMap = {};
+export const targetMap = {};
 
 const initialNodes = [];
-
-const isEmptyObject = (obj) => {
-    return Object.keys(obj).length > 0 ? false : true;
-}
-
-const TextNode = (props) => {
-
-    const { data: { label = '', customOnNodeClick } } = props;
-
-    return (
-        <div className='border text_node' onClick={() => customOnNodeClick(props)}>
-            <Handle
-                type="source"
-                position="right"
-                isValidConnection={isValidConnection}
-            />
-            <div>{label}</div>
-            <Handle
-                type="target"
-                position="left"
-                isValidConnection={isValidConnection}
-            />
-        </div>
-    );
-}
-
-const isValidConnection = (connection) => {
-    const { source = null } = connection || {};
-    return sourceMap[source] ? false : true;
-};
-
-const sourceMap = {};
-const targetMap = {};
-
-const nodeTypes = {
-    text_node: TextNode
-};
-
 let id = 0;
-const getId = () => `dndnode_${id++}`;
+const getId = () => `node_${id++}`;
 
 const Flow = () => {
     const reactFlowWrapper = useRef(null);
@@ -65,9 +31,9 @@ const Flow = () => {
     const [selectedNode, setSelectedNode] = useState(null);
 
     const onConnect = useCallback((params) => {
-        addSourceNodeIdToMap(params)
-        addTargetNodeIdToMap(params)
-        setEdges((eds) => addEdge(params, eds))
+        addSourceNodeIdToMap(params);
+        addTargetNodeIdToMap(params);
+        setEdges((eds) => addEdge(params, eds));
     }, [setEdges]);
 
     const onDragOver = useCallback((event) => {
@@ -98,6 +64,10 @@ const Flow = () => {
         targetMap[nodeId] = 0;
     }
 
+    const customOnNodeClick = useCallback((data) => {
+        setSelectedNode(data);
+    }, [setSelectedNode]);
+
     const onDrop = useCallback(
         (event) => {
             event.preventDefault();
@@ -114,28 +84,23 @@ const Flow = () => {
                 x: event.clientX - reactFlowBounds.left,
                 y: event.clientY - reactFlowBounds.top,
             });
+
             const newNode = {
                 id: getId(),
                 type,
                 position,
                 data: { label: 'Text Message', customOnNodeClick: customOnNodeClick },
             };
-            addNodeIdToTargetMap(newNode.id)
-            addNodeIdToSourceMap(newNode.id)
+
+            addNodeIdToTargetMap(newNode.id);
+            addNodeIdToSourceMap(newNode.id);
+
             setNodes((nds) => nds.concat(newNode));
         },
-        [reactFlowInstance, setNodes]
+        [customOnNodeClick, reactFlowInstance, setNodes]
     );
 
-    const customOnNodeClick = (data) => {
-        console.log(data)
-        setSelectedNode(data);
-    }
-
-    const closeSettingPanel = (nodeData) => {
-        console.log("in closeSettingPanel", nodeData)
-        setSelectedNode(null)
-    }
+    const closeSettingsPanel = () => setSelectedNode(null);
 
     const onEdgesDelete = (deletedEdges) => {
         deletedEdges.forEach((edge) => {
@@ -163,8 +128,8 @@ const Flow = () => {
             if (targetMap[id] === 0) ++noTargetHandleNodesCount;
         })
 
-        if (noTargetHandleNodesCount > 0) alert('Cannot Save Flow')
-        else alert('Need to Implement Saved Functionality')
+        if (noTargetHandleNodesCount > 0) alert("Cannot Save Flow");
+        else alert("Need to Implement Saved Functionality");
 
     }
 
@@ -172,14 +137,14 @@ const Flow = () => {
         <>
             <ReactFlowProvider>
                 <Navbar handleSaveBtn={handleSaveBtn} />
-                <div className="dndflow">
+                <div className="flow">
                     <div className="reactflow-wrapper" ref={reactFlowWrapper}>
                         <ReactFlow
                             nodes={nodes}
                             edges={edges}
                             onNodesChange={onNodesChange}
                             onEdgesChange={onEdgesChange}
-                            nodeTypes={nodeTypes}
+                            nodeTypes={NODE_TYPES}
                             onEdgesDelete={onEdgesDelete}
                             onConnect={onConnect}
                             onNodesDelete={onNodesDelete}
@@ -198,7 +163,7 @@ const Flow = () => {
                                 setSelectedNode={setSelectedNode}
                                 nodes={nodes}
                                 setNodes={setNodes}
-                                closeSettingPanel={closeSettingPanel}
+                                closeSettingsPanel={closeSettingsPanel}
                                 reactFlowInstance={reactFlowInstance}
                             />
                         ) : <NodesPanel />
