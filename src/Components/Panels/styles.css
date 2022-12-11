@@ -1,0 +1,41 @@
+.msg-node {
+    height: 45px;
+    background-color: rgb(189, 255, 255);
+    max-width: 120px;
+    padding: 4px;
+    border-radius: 2px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: grab;
+    margin: 15px 10px;
+}
+
+aside {
+    border-right: 1px solid #eee;
+    font-size: 12px;
+    background: #fcfcfc;
+}
+
+.left-arrow {
+    color: rgb(100, 100, 100);
+    flex: 10%;
+}
+
+.left-arrow :hover {
+    cursor: pointer;
+}
+
+.settings-panel-header {
+    padding: 8px;
+    display: flex;
+}
+
+.text-area {
+    margin: 10px;
+    width: 100%;
+    max-width: 312px;
+    padding: 8px;
+    border-radius: 4px;
+}

@@ -1,0 +1,19 @@
+.navbar {
+    padding: 6px;
+    background-color: rgb(232, 232, 232);
+    display: flex;
+    justify-content: flex-end;
+}
+
+.save-btn {
+    background-color: rgba(255, 255, 255, 0.87);
+    border-radius: 3px;
+    padding: 8px 20px;
+    margin-right: 100px;
+}
+
+.save-btn:hover {
+    cursor: pointer;
+    border: 1.5px solid rgb(5, 255, 255);
+    background-color: rgb(170, 255, 255);
+}

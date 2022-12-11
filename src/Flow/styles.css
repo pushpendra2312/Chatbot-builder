@@ -1,0 +1,32 @@
+.flow {
+    flex-direction: column;
+    display: flex;
+    flex-grow: 1;
+    height: 100%;
+}
+
+/* 
+.flow aside .description {
+    margin-bottom: 10px;
+} */
+
+
+.flow .reactflow-wrapper {
+    flex-grow: 1;
+    height: 100%;
+}
+
+.flow .selectall {
+    margin-top: 10px;
+}
+
+@media screen and (min-width: 768px) {
+    .flow {
+        flex-direction: row;
+    }
+
+    .flow aside {
+        width: 20%;
+        max-width: 350px;
+    }
+}
