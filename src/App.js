@@ -1,10 +1,12 @@
 import './App.css';
-import Flow from './Flow';
+import DnDFlow from './Flow';
+import './index.css';
+// import DnDFlow from './Flow';
 
 function App() {
   return (
-    <div style={{ height: '100vh', width: "100vw" }}>
-      <Flow />
+    <div className='rootContainer'>
+      <DnDFlow />
     </div>
   );
 }
